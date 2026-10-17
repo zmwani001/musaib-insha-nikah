@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 
 const event = {
-  groom: 'Musaib Syed',
+  groom: 'Musaib Sayed',
   bride: 'Insha Bint Mushtaq',
   dateLabel: 'Saturday, 31 October 2026',
   islamicDate: '19 Jumada al-Awwal 1448 AH',

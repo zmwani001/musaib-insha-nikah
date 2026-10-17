@@ -135,8 +135,8 @@ function App() {
       <section className="details-section section-pad" id="details">
         <div className="content-wide">
           <div className="section-heading reveal">
-            <SectionEyebrow>With joy in our hearts</SectionEyebrow>
-            <h2 className="section-title">The Wedding <em>Details</em></h2>
+            <SectionEyebrow>Nikkah Details</SectionEyebrow>
+            <h2 className="section-title">Nikkah <em>Details</em></h2>
             <Ornament />
             <p className="body-copy">Every detail, shared with love. We would be honoured to have you with us.</p>
           </div>

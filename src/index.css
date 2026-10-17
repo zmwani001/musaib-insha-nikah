@@ -29,7 +29,7 @@ h1, h2, h3, p { margin-top: 0; }
 .serif, h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, serif; }
 main { overflow: hidden; }
 .hero { min-height: 760px; height: 100svh; max-height: 1100px; position: relative; display: grid; place-items: center; isolation: isolate; background: #e8e0d1; }
-.hero-image { position: absolute; inset: 0; z-index: -3; background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2200&q=85'); background-size: cover; background-position: center 43%; transform: scale(1.015); animation: heroSettle 1.4s ease-out both; }
+.hero-image { position: absolute; inset: 0; z-index: -3; background-image: url('../assets/assetsnikkah.png'); background-size: cover; background-position: center 58%; transform: scale(1.015); animation: heroSettle 1.4s ease-out both; }
 .hero-wash { position: absolute; inset: 0; z-index: -2; background: linear-gradient(90deg, rgba(247,244,236,.88) 0%, rgba(247,244,236,.77) 36%, rgba(247,244,236,.62) 62%, rgba(247,244,236,.73) 100%), linear-gradient(0deg, rgba(247,244,236,.35), transparent 28%, transparent 72%, rgba(247,244,236,.3)); }
 .hero-frame { position: absolute; inset: 22px; border: 1px solid rgba(166,139,84,.54); pointer-events: none; }
 .hero-frame::before, .hero-frame::after { content: '✧'; position: absolute; color: var(--gold); font-size: 20px; background: var(--ivory); padding: 0 8px; }
@@ -58,7 +58,7 @@ main { overflow: hidden; }
 .content-narrow { width: min(100%, 650px); margin: 0 auto; text-align: center; }
 .content-wide { width: min(100%, 1080px); margin: 0 auto; }
 .blessing { background: var(--ivory); overflow: hidden; }
-.section-ornament { position: absolute; color: rgba(180,154,100,.22); font-size: 150px; line-height: 1; pointer-events: none; }
+.section-ornament { position: absolute; color: rgba(180,154,100,.22); font-family: 'Cormorant Garamond', Georgia, serif; font-size: 150px; line-height: 1; pointer-events: none; }
 .top-ornament { top: 40px; left: 7%; }
 .bottom-ornament { bottom: 30px; right: 8%; }
 .eyebrow { text-transform: uppercase; font-size: 9px; font-weight: 500; letter-spacing: .23em; color: #7d866f; margin-bottom: 15px; }
@@ -129,9 +129,9 @@ main { overflow: hidden; }
 @keyframes scrollPulse { 0%, 100% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(10px); opacity: .2; } }
 
 @media (max-width: 800px) {
-  .hero { min-height: 720px; height: auto; }
-  .hero-image { background-position: 52% center; }
-  .hero-wash { background: rgba(247,244,236,.78); }
+  .hero { min-height: max(720px, 100svh); height: auto; overflow: hidden; }
+  .hero-image { background-position: 68% center; }
+  .hero-wash { background: linear-gradient(180deg, rgba(247,244,236,.66), rgba(247,244,236,.8)); }
   .hero-content { padding: 82px 26px 96px; }
   .hero-frame { inset: 13px; }
   .hero-side-note { display: none; }
@@ -148,16 +148,20 @@ main { overflow: hidden; }
   .bottom-ornament { right: -15px; bottom: 20px; }
 }
 @media (max-width: 480px) {
-  .hero { min-height: 690px; }
-  .hero-content { padding: 74px 18px 90px; }
+  .hero { min-height: max(700px, 100svh); }
+  .hero-image { background-position: 72% center; }
+  .hero-content { width: 100%; padding: 66px 18px 84px; }
+  .bismillah { font-size: 27px; }
   .translation { font-size: 7px; letter-spacing: .12em; line-height: 1.7; }
   .intro-line { font-size: 8px; letter-spacing: .18em; }
-  .couple-name { font-size: clamp(38px, 10.5vw, 50px); }
-  .bride-name { font-size: clamp(34px, 9.5vw, 46px); }
+  .couple-name { font-size: clamp(34px, 10vw, 48px); line-height: 1; }
+  .bride-name { font-size: clamp(31px, 9vw, 43px); }
   .invitation-copy { font-size: 19px; }
   .hero-meta { flex-direction: column; gap: 8px; font-size: 9px; }
   .hero-meta i { width: 18px; height: 1px; }
-  .hero-location { font-size: 10px; }
+  .hero-location { font-size: 10px; flex-wrap: wrap; }
+  .hero-frame { inset: 9px; }
+  .scroll-cue { bottom: 20px; }
   .section-pad { padding: 72px 18px; }
   .section-title { font-size: 43px; }
   .blessing-copy { font-size: 23px; }
@@ -178,6 +182,15 @@ main { overflow: hidden; }
   .countdown-date { line-height: 1.8; font-size: 9px; }
   .closing-copy { font-size: 19px; }
   .footer { flex-wrap: wrap; justify-content: center; text-align: center; margin-top: 55px; font-size: 6px; }
+}
+@media (max-width: 360px) {
+  .hero-content { padding-right: 14px; padding-left: 14px; }
+  .translation { letter-spacing: .08em; }
+  .intro-line { letter-spacing: .12em; }
+  .section-pad { padding-right: 14px; padding-left: 14px; }
+  .detail-card { padding-right: 6px; padding-left: 6px; }
+  .detail-value { font-size: 16px; }
+  .countdown-label { letter-spacing: .06em; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }

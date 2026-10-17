@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 
 const event = {
-  groom: 'Musaib Sayyed',
+  groom: 'Musaib Syed',
   bride: 'Insha Bint Mushtaq',
   dateLabel: 'Saturday, 31 October 2026',
   islamicDate: '19 Jumada al-Awwal 1448 AH',
@@ -115,7 +115,7 @@ function App() {
       </section>
 
       <section className="blessing section-pad" id="blessing">
-        <div className="section-ornament top-ornament" aria-hidden="true">✳</div>
+        <div className="section-ornament top-ornament" aria-hidden="true">✳︎</div>
         <div className="content-narrow reveal">
           <SectionEyebrow>A day of faith, love & family</SectionEyebrow>
           <h2 className="section-title">A Blessed <em>Beginning</em></h2>
@@ -129,7 +129,7 @@ function App() {
             <span className="verse-source">— SURAH AN-NABA (78:8)</span>
           </div>
         </div>
-        <div className="section-ornament bottom-ornament" aria-hidden="true">✳</div>
+        <div className="section-ornament bottom-ornament" aria-hidden="true">✳︎</div>
       </section>
 
       <section className="details-section section-pad" id="details">

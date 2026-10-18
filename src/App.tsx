@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import invitationAudio from '../assets/Golden Hour Oud_MP3.mp3'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   ArrowDown, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
-  MapPin, Menu, Moon, Pause, Play, Sparkles, Star, X,
+  MapPin, Menu, Moon, Sparkles, Star, X,
 } from 'lucide-react'
 
 const event = {
@@ -61,11 +60,6 @@ function SectionEyebrow({ children }: { children: ReactNode }) {
 
 function App() {
   const countdown = useCountdown(event.targetUtc)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false)
-  const [audioTime, setAudioTime] = useState(0)
-  const [audioDuration, setAudioDuration] = useState(0)
-  const [audioError, setAudioError] = useState('')
   const [activeSection, setActiveSection] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const navItems = [
@@ -75,52 +69,6 @@ function App() {
     { label: 'Venue', href: '#venue', section: 'venue' },
     { label: 'Countdown', href: '#countdown', section: 'countdown' },
   ]
-
-  useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    const handleEnded = () => setIsAudioPlaying(false)
-    const handlePause = () => setIsAudioPlaying(false)
-    const handlePlay = () => setIsAudioPlaying(true)
-    const handleTimeUpdate = () => setAudioTime(audio.currentTime)
-    const handleDurationChange = () => setAudioDuration(audio.duration)
-
-    audio.addEventListener('ended', handleEnded)
-    audio.addEventListener('pause', handlePause)
-    audio.addEventListener('play', handlePlay)
-    audio.addEventListener('timeupdate', handleTimeUpdate)
-    audio.addEventListener('loadedmetadata', handleDurationChange)
-    audio.addEventListener('durationchange', handleDurationChange)
-
-    return () => {
-      audio.removeEventListener('ended', handleEnded)
-      audio.removeEventListener('pause', handlePause)
-      audio.removeEventListener('play', handlePlay)
-      audio.removeEventListener('timeupdate', handleTimeUpdate)
-      audio.removeEventListener('loadedmetadata', handleDurationChange)
-      audio.removeEventListener('durationchange', handleDurationChange)
-    }
-  }, [])
-
-  const toggleAudio = async () => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    if (audio.paused) {
-      try {
-        setAudioError('')
-        await audio.play()
-      } catch (error) {
-        console.error('Unable to play the invitation audio.', error)
-        setAudioError('Audio could not be played. Please try again.')
-      }
-    } else {
-      audio.pause()
-    }
-  }
-  const audioClock = `${Math.floor(audioTime / 60)}:${String(Math.floor(audioTime % 60)).padStart(2, '0')}`
-  const audioProgress = audioDuration > 0 ? audioTime / audioDuration : 0
 
   useEffect(() => {
     const sections = navItems
@@ -207,30 +155,9 @@ function App() {
             >
               {isMenuOpen ? <X size={19} /> : <Menu size={19} />}
             </button>
-            <button
-              type="button"
-              className={`audio-island${isAudioPlaying ? ' is-playing' : ''}`}
-              aria-label={isAudioPlaying ? 'Pause Quran recitation' : 'Play Quran recitation'}
-              aria-pressed={isAudioPlaying}
-              onClick={toggleAudio}
-              title={audioError || undefined}
-            >
-              <span className="island-control" aria-hidden="true">
-                {isAudioPlaying ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
-              </span>
-              <span className="island-time">{audioClock}</span>
-              <span className="island-wave" aria-hidden="true">
-                {Array.from({ length: 16 }, (_, index) => (
-                  <i className={index / 16 < audioProgress ? 'heard' : ''} key={index} />
-                ))}
-              </span>
-            </button>
-            {audioError && <span className="sr-only" role="status">{audioError}</span>}
           </div>
         </div>
       </header>
-
-      <audio ref={audioRef} src={invitationAudio} preload="auto" />
 
       <section className="hero" id="home">
         <div className="hero-image" aria-hidden="true" />

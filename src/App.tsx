@@ -12,12 +12,11 @@ const event = {
   timeLabel: '4:00 PM onwards, after Asr Prayer',
   venue: 'Maktab e Gousia',
   address: 'Nishat Brein Link Rd, Brein, Srinagar, Jammu and Kashmir 191121',
-  plusCode: '4V5J+73 Srinagar',
   // 31 October 2026, 4:00 PM in Asia/Kolkata = 10:30 UTC.
   targetUtc: Date.UTC(2026, 9, 31, 10, 30, 0),
 }
 
-const mapsDestination = `${event.venue}, ${event.address}, ${event.plusCode}`
+const mapsDestination = `${event.venue}, ${event.address}`
 const mapsQuery = encodeURIComponent(mapsDestination)
 const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`
 const mapsPlaceUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
@@ -115,7 +114,7 @@ function App() {
     { icon: CalendarDays, label: 'Date', value: event.dateLabel },
     { icon: Moon, label: 'Islamic date', value: event.islamicDate },
     { icon: Clock3, label: 'Time', value: event.timeLabel },
-    { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}\n${event.plusCode}` },
+    { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
   ]
 
   return (
@@ -232,7 +231,6 @@ function App() {
             <div className="venue-pin"><MapPin size={19} strokeWidth={1.4} /></div>
             <h3 className="venue-name">{event.venue}</h3>
             <p className="venue-address">{event.address}</p>
-            <p className="venue-plus-code">{event.plusCode}</p>
             <p className="body-copy venue-note">We look forward to welcoming you for this blessed occasion in the heart of beautiful Kashmir.</p>
             <div className="venue-actions">
               <a className="button button-primary" href={mapsUrl} target="_blank" rel="noreferrer">
@@ -252,7 +250,7 @@ function App() {
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
-            <div className="map-footer"><MapPin size={14} /> {event.venue} · {event.plusCode}</div>
+            <div className="map-footer"><MapPin size={14} /> {event.venue}</div>
           </div>
         </div>
       </section>

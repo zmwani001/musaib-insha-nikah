@@ -378,7 +378,7 @@ function App() {
           <p className="closing-names">Musaib <span>&amp;</span> Insha</p>
           <Ornament small />
         </div>
-        <footer className="footer">© 2026 MUSAIB &amp; INSHA. ALL PRAYERS AND WARM WISHES RESERVED.</footer>
+        <footer className="footer">© 2026 MUSAIB &amp; INSHA.</footer>
       </section>
     </main>
   )

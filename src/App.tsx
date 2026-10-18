@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import aayatAudio from '../assets/aayat.mp3'
 import {
   ArrowDown, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
-  MapPin, Moon, Sparkles, Star,
+  MapPin, Menu, Moon, Pause, Play, Sparkles, Star, X,
 } from 'lucide-react'
 
 const event = {
@@ -57,6 +58,85 @@ function SectionEyebrow({ children }: { children: ReactNode }) {
 
 function App() {
   const countdown = useCountdown(event.targetUtc)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false)
+  const [audioTime, setAudioTime] = useState(0)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [audioError, setAudioError] = useState('')
+  const [activeSection, setActiveSection] = useState('home')
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const navItems = [
+    { label: 'Invitation', href: '#home', section: 'home' },
+    { label: 'The Occasion', href: '#blessing', section: 'blessing' },
+    { label: 'Details', href: '#details', section: 'details' },
+    { label: 'Venue', href: '#venue', section: 'venue' },
+    { label: 'Countdown', href: '#countdown', section: 'countdown' },
+  ]
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    const handleEnded = () => setIsAudioPlaying(false)
+    const handlePause = () => setIsAudioPlaying(false)
+    const handlePlay = () => setIsAudioPlaying(true)
+    const handleTimeUpdate = () => setAudioTime(audio.currentTime)
+    const handleDurationChange = () => setAudioDuration(audio.duration)
+
+    audio.addEventListener('ended', handleEnded)
+    audio.addEventListener('pause', handlePause)
+    audio.addEventListener('play', handlePlay)
+    audio.addEventListener('timeupdate', handleTimeUpdate)
+    audio.addEventListener('loadedmetadata', handleDurationChange)
+    audio.addEventListener('durationchange', handleDurationChange)
+
+    return () => {
+      audio.removeEventListener('ended', handleEnded)
+      audio.removeEventListener('pause', handlePause)
+      audio.removeEventListener('play', handlePlay)
+      audio.removeEventListener('timeupdate', handleTimeUpdate)
+      audio.removeEventListener('loadedmetadata', handleDurationChange)
+      audio.removeEventListener('durationchange', handleDurationChange)
+    }
+  }, [])
+
+  const toggleAudio = async () => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    if (audio.paused) {
+      try {
+        setAudioError('')
+        await audio.play()
+      } catch (error) {
+        console.error('Unable to play the invitation audio.', error)
+        setAudioError('Audio could not be played. Please try again.')
+      }
+    } else {
+      audio.pause()
+    }
+  }
+  const audioClock = `${Math.floor(audioTime / 60)}:${String(Math.floor(audioTime % 60)).padStart(2, '0')}`
+  const audioProgress = audioDuration > 0 ? audioTime / audioDuration : 0
+
+  useEffect(() => {
+    const sections = navItems
+      .map(({ section }) => document.getElementById(section))
+      .filter((section): section is HTMLElement => section !== null)
+    if (!('IntersectionObserver' in window)) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+        if (visible) setActiveSection(visible.target.id)
+      },
+      { rootMargin: '-20% 0px -55% 0px', threshold: [0, 0.15, 0.35] },
+    )
+    sections.forEach((section) => observer.observe(section))
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     const items = document.querySelectorAll<HTMLElement>('.reveal')
@@ -89,11 +169,72 @@ function App() {
 
   return (
     <main>
+      <header className="topbar">
+        <div className="topbar-inner">
+          <a className="brand-block" href="#home" aria-label="Musaib and Insha, home">
+            <div className="brand-mark" aria-hidden="true">
+              <span className="brand-m">M</span>
+              <span className="brand-amp">&amp;</span>
+              <span className="brand-i">I</span>
+            </div>
+          </a>
+
+          <nav className={`top-nav${isMenuOpen ? ' is-open' : ''}`} id="main-navigation" aria-label="Main navigation">
+            {navItems.map(({ label, href, section }) => (
+              <a
+                key={label}
+                className={`nav-link${activeSection === section ? ' active' : ''}`}
+                href={href}
+                aria-current={activeSection === section ? 'location' : undefined}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="topbar-actions">
+            <button
+              type="button"
+              className="menu-toggle"
+              aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={isMenuOpen}
+              aria-controls="main-navigation"
+              onClick={() => setIsMenuOpen((open) => !open)}
+            >
+              {isMenuOpen ? <X size={19} /> : <Menu size={19} />}
+            </button>
+            <button
+              type="button"
+              className={`audio-island${isAudioPlaying ? ' is-playing' : ''}`}
+              aria-label={isAudioPlaying ? 'Pause Quran recitation' : 'Play Quran recitation'}
+              aria-pressed={isAudioPlaying}
+              onClick={toggleAudio}
+              title={audioError || undefined}
+            >
+              <span className="island-control" aria-hidden="true">
+                {isAudioPlaying ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
+              </span>
+              <span className="island-time">{audioClock}</span>
+              <span className="island-wave" aria-hidden="true">
+                {Array.from({ length: 16 }, (_, index) => (
+                  <i className={index / 16 < audioProgress ? 'heard' : ''} key={index} />
+                ))}
+              </span>
+            </button>
+            {audioError && <span className="sr-only" role="status">{audioError}</span>}
+          </div>
+        </div>
+      </header>
+
+      <audio ref={audioRef} src={aayatAudio} preload="auto" />
+
       <section className="hero" id="home">
         <div className="hero-image" aria-hidden="true" />
         <div className="hero-wash" aria-hidden="true" />
         <div className="hero-frame" aria-hidden="true" />
         <div className="hero-content">
+          <Ornament small />
           <div className="bismillah" lang="ar" dir="rtl">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
           <p className="translation">In the name of Allah, the Most Gracious, the Most Merciful</p>
           <Ornament />
@@ -120,12 +261,13 @@ function App() {
           <SectionEyebrow>A day of faith, love & family</SectionEyebrow>
           <h2 className="section-title">A Blessed <em>Beginning</em></h2>
           <Ornament />
-          <p className="blessing-copy">Two souls, one beautiful promise, and a new journey beginning with the blessings of Allah.</p>
-          <p className="body-copy">With the duas and blessings of our families, we invite you to join us as we celebrate the sacred bond of Nikah between Musaib and Insha.</p>
-          <p className="body-copy">Your presence and prayers will make this occasion even more special.</p>
+          <div className="blessing-copy">
+            <p>With gratitude to Allah and the duas of our families, we invite you to celebrate the Nikah of Musaib and Insha.</p>
+            <p>Your presence and prayers would mean the world to us.</p>
+          </div>
           <div className="verse">
-            <span className="verse-mark">“</span>
-            <p>And We created you in pairs.</p>
+            <p className="verse-arabic" lang="ar" dir="rtl">وَخَلَقْنَاكُمْ أَزْوَاجًا</p>
+            <p className="verse-translation">And We created you in pairs.</p>
             <span className="verse-source">— SURAH AN-NABA (78:8)</span>
           </div>
         </div>
@@ -135,8 +277,7 @@ function App() {
       <section className="details-section section-pad" id="details">
         <div className="content-wide">
           <div className="section-heading reveal">
-            <SectionEyebrow>Nikkah Details</SectionEyebrow>
-            <h2 className="section-title">Nikkah <em>Details</em></h2>
+            <h2 className="section-title">Nikah <em>Details</em></h2>
             <Ornament />
             <p className="body-copy">Every detail, shared with love. We would be honoured to have you with us.</p>
           </div>
@@ -185,7 +326,7 @@ function App() {
         </div>
       </section>
 
-      <section className="countdown-section section-pad">
+      <section className="countdown-section section-pad" id="countdown">
         <div className="countdown-pattern" aria-hidden="true" />
         <div className="content-narrow reveal">
           <SectionEyebrow>Until we gather, Insha’Allah</SectionEyebrow>
@@ -218,12 +359,24 @@ function App() {
           <SectionEyebrow>A little prayer, a lifetime of blessings</SectionEyebrow>
           <h2 className="section-title">Your Duas Are<br />Our Greatest <em>Gift</em></h2>
           <Ornament />
-          <p className="closing-copy">We look forward to sharing this blessed moment with you. Please remember Musaib and Insha in your prayers as they begin this new chapter of their lives.</p>
+          <p className="closing-copy">Under the blessings of Allah, along the quiet shores of Dal Lake, Srinagar, Kashmir. May this sacred union be enriched with enduring peace, mercy, and grace.</p>
+          <figure className="closing-calligraphy">
+            <span className="closing-hairline" aria-hidden="true" />
+            <p className="closing-arabic" lang="ar" dir="rtl">فِي الدُّنْيَا وَالْآخِرَةِ</p>
+            <span className="closing-hairline" aria-hidden="true" />
+            <figcaption>Together, in this world and the Hereafter.</figcaption>
+          </figure>
+          <Ornament small />
+          <div className="closing-dua">
+            <p className="closing-dua-arabic" lang="ar" dir="rtl">بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</p>
+            <p className="closing-dua-translation">May Allah bless you both, shower His blessings upon you, and unite you in goodness.</p>
+            <p className="closing-dua-source">— SUNAN ABU DAWUD &amp; JAMI' AT-TIRMIDHI</p>
+          </div>
           <p className="closing-signoff">With love, duas, and gratitude</p>
           <p className="closing-names">Musaib <span>&amp;</span> Insha</p>
           <Ornament small />
         </div>
-        <footer className="footer"><span>MADE WITH DUAS</span><span>31 · 10 · 2026</span><span>SRINAGAR, KASHMIR</span></footer>
+        <footer className="footer">© 2026 MUSAIB &amp; INSHA. ALL PRAYERS AND WARM WISHES RESERVED.</footer>
       </section>
     </main>
   )

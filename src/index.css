@@ -475,9 +475,8 @@ main { overflow: clip; }
   font-style: italic;
   line-height: 1.3;
 }
-.closing-inner > .ornament-small {
-  margin: 32px auto;
-}
+.closing-group-divider { margin: 16px auto; }
+.closing-group-divider .ornament-small { margin: 0 auto; }
 .closing-dua {
   max-width: 570px;
   margin: 0 auto 36px;

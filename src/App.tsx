@@ -366,7 +366,9 @@ function App() {
             <span className="closing-hairline" aria-hidden="true" />
             <figcaption>Together, in this world and the Hereafter.</figcaption>
           </figure>
-          <Ornament small />
+          <div className="closing-group-divider">
+            <Ornament small />
+          </div>
           <div className="closing-dua">
             <p className="closing-dua-arabic" lang="ar" dir="rtl">بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</p>
             <p className="closing-dua-translation">May Allah bless you both, shower His blessings upon you, and unite you in goodness.</p>

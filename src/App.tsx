@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import aayatAudio from '../assets/aayat.mp3'
+import invitationAudio from '../assets/Golden Hour Oud_MP3.mp3'
 import {
   ArrowDown, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
   MapPin, Menu, Moon, Pause, Play, Sparkles, Star, X,
@@ -227,7 +227,7 @@ function App() {
         </div>
       </header>
 
-      <audio ref={audioRef} src={aayatAudio} preload="auto" />
+      <audio ref={audioRef} src={invitationAudio} preload="auto" />
 
       <section className="hero" id="home">
         <div className="hero-image" aria-hidden="true" />

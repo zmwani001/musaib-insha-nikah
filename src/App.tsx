@@ -17,9 +17,10 @@ const event = {
   targetUtc: Date.UTC(2026, 9, 31, 10, 30, 0),
 }
 
-const venueQuery = encodeURIComponent(`${event.venue}, ${event.address}`)
-const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${venueQuery}`
-const mapsEmbedUrl = `https://maps.google.com/maps?q=${venueQuery}&output=embed`
+const mapsDestination = 'Maktab e Gousia, Nishat Brein Link Rd, Brein, Srinagar, 191121'
+const mapsQuery = encodeURIComponent(mapsDestination)
+const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`
+const mapsEmbedUrl = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`
 
 function useCountdown(targetUtc: number) {
   const getRemaining = () => Math.max(0, targetUtc - Date.now())
@@ -315,7 +316,7 @@ function App() {
           <div className="map-wrap reveal">
             <div className="map-caption"><span>THE DESTINATION</span><span>BREIN · SRINAGAR</span></div>
             <iframe
-              title="Map showing Darsgahi Gousia, Brein, Srinagar"
+              title="Map showing Maktab e Gousia, Nishat Brein Link Road, Srinagar"
               src={mapsEmbedUrl}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

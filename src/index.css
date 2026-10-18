@@ -410,6 +410,7 @@ main { overflow: clip; }
 .venue-pin { color: var(--gold); margin: 27px 0 7px; }
 .venue-name { font-size: 32px; font-weight: 500; margin-bottom: 4px; }
 .venue-address { color: #77786d; font-size: 11px; line-height: 1.7; }
+.venue-plus-code { color: #77786d; font-size: 10px; letter-spacing: .04em; margin: 3px 0 0; }
 .venue-note { margin: 12px 0 18px; }
 .venue-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 43px; padding: 0 15px; font-size: 9px; letter-spacing: .05em; transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease; }

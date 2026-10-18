@@ -11,15 +11,17 @@ const event = {
   dateLabel: 'Saturday, 31 October 2026',
   islamicDate: '19 Jumada al-Awwal 1448 AH',
   timeLabel: '4:00 PM onwards, after Asr Prayer',
-  venue: 'Darsgahi Gousia',
-  address: 'Brein, Srinagar, Jammu & Kashmir, India',
+  venue: 'Maktab e Gousia',
+  address: 'Nishat Brein Link Rd, Brein, Srinagar, Jammu and Kashmir 191121',
+  plusCode: '4V5J+73 Srinagar',
   // 31 October 2026, 4:00 PM in Asia/Kolkata = 10:30 UTC.
   targetUtc: Date.UTC(2026, 9, 31, 10, 30, 0),
 }
 
-const mapsDestination = 'Maktab e Gousia, Nishat Brein Link Rd, Brein, Srinagar, 191121'
+const mapsDestination = `${event.venue}, ${event.address}, ${event.plusCode}`
 const mapsQuery = encodeURIComponent(mapsDestination)
 const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`
+const mapsPlaceUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
 const mapsEmbedUrl = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`
 
 function useCountdown(targetUtc: number) {
@@ -165,7 +167,7 @@ function App() {
     { icon: CalendarDays, label: 'Date', value: event.dateLabel },
     { icon: Moon, label: 'Islamic date', value: event.islamicDate },
     { icon: Clock3, label: 'Time', value: event.timeLabel },
-    { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
+    { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}\n${event.plusCode}` },
   ]
 
   return (
@@ -303,26 +305,27 @@ function App() {
             <div className="venue-pin"><MapPin size={19} strokeWidth={1.4} /></div>
             <h3 className="venue-name">{event.venue}</h3>
             <p className="venue-address">{event.address}</p>
+            <p className="venue-plus-code">{event.plusCode}</p>
             <p className="body-copy venue-note">We look forward to welcoming you for this blessed occasion in the heart of beautiful Kashmir.</p>
             <div className="venue-actions">
               <a className="button button-primary" href={mapsUrl} target="_blank" rel="noreferrer">
                 <Compass size={16} /> Get Directions <ArrowUpRight size={15} />
               </a>
-              <a className="button button-outline" href="https://darsgahigousia.com/" target="_blank" rel="noreferrer">
-                View Venue Website <ArrowUpRight size={15} />
+              <a className="button button-outline" href={mapsPlaceUrl} target="_blank" rel="noreferrer">
+                View on Google Maps <ArrowUpRight size={15} />
               </a>
             </div>
           </div>
           <div className="map-wrap reveal">
             <div className="map-caption"><span>THE DESTINATION</span><span>BREIN · SRINAGAR</span></div>
             <iframe
-              title="Map showing Maktab e Gousia, Nishat Brein Link Road, Srinagar"
+              title={`Map showing ${event.venue}, ${event.address}`}
               src={mapsEmbedUrl}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
-            <div className="map-footer"><MapPin size={14} /> {event.venue}, Brein, Srinagar</div>
+            <div className="map-footer"><MapPin size={14} /> {event.venue} · {event.plusCode}</div>
           </div>
         </div>
       </section>

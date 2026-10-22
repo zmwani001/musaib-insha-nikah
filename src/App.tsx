@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import backgroundAudioUrl from '../assets/background-music.mp3'
 import {
   ArrowDown, ArrowUp, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
-  MapPin, Menu, Moon, Share2, Sparkles, Star, X,
+  MapPin, Menu, Moon, Music2, Pause, Share2, Sparkles, Star, X,
 } from 'lucide-react'
 
 const event = {
@@ -61,6 +62,8 @@ function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [shareStatus, setShareStatus] = useState('')
+  const [audioPlaying, setAudioPlaying] = useState(false)
+  const audioRef = useRef<HTMLAudioElement>(null)
   const navItems = [
     { label: 'Invitation', href: '#home', section: 'home' },
     { label: 'The Occasion', href: '#blessing', section: 'blessing' },
@@ -117,11 +120,38 @@ function App() {
     { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
   ]
 
+  const startAudio = () => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    audio.play().then(() => {
+      setShareStatus('')
+    }).catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === 'AbortError') return
+      setShareStatus('Background audio could not be played. Please try again.')
+    })
+  }
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    audio.play().catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        setShareStatus('Tap the music button to start the background audio.')
+      } else if (!(error instanceof DOMException && error.name === 'AbortError')) {
+        setShareStatus('Background audio could not be played. Please try again.')
+      }
+    })
+  }, [])
+
   const shareInvitation = async () => {
     const invitationUrl = new URL(window.location.href)
     invitationUrl.hash = ''
     const message = [
       '*Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation*',
+      '',
+      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
       '',
       'In the name of Allah, the Most Gracious, the Most Merciful.',
       '',
@@ -153,6 +183,16 @@ function App() {
   return (
     <>
     <main>
+      <audio
+        ref={audioRef}
+        src={backgroundAudioUrl}
+        autoPlay
+        loop
+        preload="auto"
+        onPlay={() => setAudioPlaying(true)}
+        onPause={() => setAudioPlaying(false)}
+        onError={() => setShareStatus('Background audio could not be loaded.')}
+      />
       <header className="topbar">
         <div className="topbar-inner">
           <a className="brand-block" href="#home" aria-label="Musaib and Insha, home">
@@ -345,6 +385,22 @@ function App() {
       {shareStatus && <p className="share-status" role="status">{shareStatus}</p>}
       <button type="button" className="floating-action" aria-label="Share this invitation" onClick={shareInvitation}>
         <Share2 size={22} strokeWidth={1.8} />
+      </button>
+      <button
+        type="button"
+        className="floating-action"
+        aria-label={audioPlaying ? 'Pause background music' : 'Play background music'}
+        aria-pressed={audioPlaying}
+        onClick={() => {
+          if (audioPlaying) {
+            audioRef.current?.pause()
+            setShareStatus('')
+          } else {
+            startAudio()
+          }
+        }}
+      >
+        {audioPlaying ? <Pause size={22} strokeWidth={1.8} /> : <Music2 size={22} strokeWidth={1.8} />}
       </button>
       <button
         type="button"

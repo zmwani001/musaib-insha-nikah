@@ -197,18 +197,24 @@ function App() {
   }, [startAudio])
 
   const shareInvitation = async () => {
-    const invitationUrl = new URL(window.location.href)
-    invitationUrl.hash = ''
-    invitationUrl.search = ''
-    const invitationLink = invitationUrl.toString()
+    const invitationLink = 'https://musaib-insha-nikah.vercel.app/'
+    const invitationMessage = [
+      'Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation',
+      '',
+      'In the name of Allah, the Most Gracious, the Most Merciful.',
+      '',
+      'Together with their families, Musaib Sayed & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer) at Maktab e Gousia, Brein, Srinagar.',
+      '',
+      'Explore the Invitation:',
+      invitationLink,
+    ].join('\n')
     const isMobile = navigator.maxTouchPoints > 0 && window.matchMedia('(max-width: 800px)').matches
 
     if (isMobile && navigator.share) {
       try {
         await navigator.share({
           title: 'Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation',
-          text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ. Join us to celebrate the Nikah of Musaib Sayed & Insha Bint Mushtaq on Saturday, 31 October 2026.',
-          url: invitationLink,
+          text: invitationMessage,
         })
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return

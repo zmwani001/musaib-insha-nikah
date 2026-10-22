@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import backgroundAudioUrl from '../assets/background-music.mp3'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
   ArrowDown, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
   MapPin, Menu, Moon, Share2, Sparkles, Star, X,
@@ -61,16 +60,8 @@ function App() {
   const countdown = useCountdown(event.targetUtc)
   const [activeSection, setActiveSection] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
-  const [isWelcomeLeaving, setIsWelcomeLeaving] = useState(false)
   const [toast, setToast] = useState('')
-  const audioRef = useRef<HTMLAudioElement>(null)
-  const audioContextRef = useRef<AudioContext | null>(null)
-  const audioGainRef = useRef<GainNode | null>(null)
-  const audioStartedRef = useRef(false)
-  const audioAttemptRef = useRef(false)
   const toastTimeoutRef = useRef<number | null>(null)
-  const welcomeTimeoutRef = useRef<number | null>(null)
   const navItems = [
     { label: 'Invitation', href: '#home', section: 'home' },
     { label: 'The Occasion', href: '#blessing', section: 'blessing' },
@@ -129,72 +120,15 @@ function App() {
     { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
   ]
 
-  const showToast = useCallback((message: string) => {
+  const showToast = (message: string) => {
     setToast(message)
     if (toastTimeoutRef.current !== null) window.clearTimeout(toastTimeoutRef.current)
     toastTimeoutRef.current = window.setTimeout(() => setToast(''), 2600)
-  }, [])
-
-  const startAudio = useCallback(() => {
-    const audio = audioRef.current
-    if (!audio || audioStartedRef.current || audioAttemptRef.current) return
-    audioAttemptRef.current = true
-
-    try {
-      let audioContext = audioContextRef.current
-      if (!audioContext) {
-        audioContext = new AudioContext()
-        const source = audioContext.createMediaElementSource(audio)
-        const gain = audioContext.createGain()
-        gain.gain.value = 0
-        source.connect(gain)
-        gain.connect(audioContext.destination)
-        audioContextRef.current = audioContext
-        audioGainRef.current = gain
-      }
-
-      const activeAudioContext = audioContext
-      const playback = audio.play()
-      const contextReady = activeAudioContext.state === 'suspended'
-        ? activeAudioContext.resume()
-        : Promise.resolve()
-      Promise.all([playback, contextReady]).then(() => {
-        const gain = audioGainRef.current
-        if (!gain) throw new Error('Background music gain control is unavailable.')
-        gain.gain.cancelScheduledValues(activeAudioContext.currentTime)
-        gain.gain.setValueAtTime(0, activeAudioContext.currentTime)
-        gain.gain.linearRampToValueAtTime(0.45, activeAudioContext.currentTime + 2.5)
-        audioStartedRef.current = true
-      }).catch((error: unknown) => {
-        audioAttemptRef.current = false
-        if (error instanceof DOMException && error.name === 'AbortError') return
-        showToast('Background music could not start. Tap to try again.')
-      })
-    } catch {
-      audioAttemptRef.current = false
-      showToast('Background music could not start. Tap to try again.')
-    }
-  }, [showToast])
-
-  const openInvitation = () => {
-    startAudio()
-    setIsWelcomeLeaving(true)
-    welcomeTimeoutRef.current = window.setTimeout(() => setIsWelcomeVisible(false), 700)
   }
 
-  useEffect(() => {
-    const handleFirstInteraction = () => startAudio()
-    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true })
-    window.addEventListener('click', handleFirstInteraction, { passive: true })
-    window.addEventListener('scroll', handleFirstInteraction, { passive: true })
-    return () => {
-      window.removeEventListener('pointerdown', handleFirstInteraction)
-      window.removeEventListener('click', handleFirstInteraction)
-      window.removeEventListener('scroll', handleFirstInteraction)
-      if (toastTimeoutRef.current !== null) window.clearTimeout(toastTimeoutRef.current)
-      if (welcomeTimeoutRef.current !== null) window.clearTimeout(welcomeTimeoutRef.current)
-    }
-  }, [startAudio])
+  useEffect(() => () => {
+    if (toastTimeoutRef.current !== null) window.clearTimeout(toastTimeoutRef.current)
+  }, [])
 
   const shareInvitation = async () => {
     const invitationLink = 'https://musaib-insha-nikah.vercel.app/'
@@ -246,29 +180,7 @@ function App() {
 
   return (
     <>
-    {isWelcomeVisible && (
-      <div className={`welcome-overlay${isWelcomeLeaving ? ' is-leaving' : ''}`} role="dialog" aria-modal="true" aria-labelledby="welcome-title">
-        <div className="welcome-content">
-          <Ornament small />
-          <div className="brand-mark welcome-monogram" aria-hidden="true">
-            <span className="brand-m">M</span>
-            <span className="brand-amp">&amp;</span>
-            <span className="brand-i">I</span>
-          </div>
-          <p className="intro-line">Together with their families</p>
-          <h1 className="welcome-names" id="welcome-title">{event.groom}<br /><span>&amp;</span><br />{event.bride}</h1>
-          <p className="welcome-caption">Request the honour of your presence</p>
-          <button className="welcome-button" type="button" onClick={openInvitation}>Open Invitation</button>
-        </div>
-      </div>
-    )}
     <main>
-      <audio
-        ref={audioRef}
-        src={backgroundAudioUrl}
-        loop
-        preload="auto"
-      />
       <header className="topbar">
         <div className="topbar-inner">
           <a className="brand-block" href="#home" aria-label="Musaib and Insha, home">

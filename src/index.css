@@ -319,8 +319,6 @@ main { overflow: clip; }
 .button:hover { transform: translateY(-2px); }
 .button-primary { background: var(--green); color: var(--ivory); border: 1px solid var(--green); }
 .button-primary:hover { background: var(--deep-green); }
-.button-outline { border: 1px solid #c8c0ac; color: var(--green); }
-.button-outline:hover { border-color: var(--green); background: #eeeadf; }
 .map-wrap { border: 1px solid #d8d0bd; padding: 10px; background: #f1ede3; }
 .map-caption, .map-footer { display: flex; justify-content: space-between; align-items: center; color: #7a806f; font-size: 8px; letter-spacing: .14em; padding: 9px 5px 12px; }
 .map-wrap iframe { display: block; width: 100%; height: 350px; border: 0; filter: saturate(.65) sepia(.08); background: #e5e2d7; }
@@ -447,6 +445,45 @@ main { overflow: clip; }
   letter-spacing: .08em;
   text-align: center;
 }
+.floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: flex;
+  gap: 16px;
+}
+.floating-action {
+  display: inline-flex;
+  width: 60px;
+  height: 60px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(247, 243, 234, .24);
+  border-radius: 50%;
+  background: var(--deep-green);
+  color: var(--ivory);
+  cursor: pointer;
+  transition: background .2s ease, transform .2s ease;
+}
+.floating-action:hover { background: var(--green); transform: translateY(-2px); }
+.floating-action:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.share-status {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  width: max-content;
+  max-width: min(300px, calc(100vw - 32px));
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(247, 243, 234, .2);
+  background: var(--deep-green);
+  color: var(--ivory);
+  font-size: 12px;
+  line-height: 1.5;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .15);
+}
 .reveal { opacity: 0; transform: translateY(12px); transition: opacity .42s ease-out, transform .42s ease-out; }
 .reveal.is-visible { opacity: 1; transform: translateY(0); }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
@@ -517,6 +554,8 @@ main { overflow: clip; }
   .bottom-ornament { right: -15px; bottom: 20px; }
 }
 @media (max-width: 480px) {
+  .floating-actions { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); gap: 12px; }
+  .floating-action { width: 56px; height: 56px; }
   .topbar-inner { min-height: 62px; padding: 7px 14px; }
   .brand-block { gap: 8px; }
   .brand-mark .brand-m,

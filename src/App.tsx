@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
-  ArrowDown, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
-  MapPin, Menu, Moon, Sparkles, Star, X,
+  ArrowDown, ArrowUp, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
+  MapPin, Menu, Moon, Share2, Sparkles, Star, X,
 } from 'lucide-react'
 
 const event = {
@@ -19,7 +19,6 @@ const event = {
 const mapsDestination = `${event.venue}, ${event.address}`
 const mapsQuery = encodeURIComponent(mapsDestination)
 const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`
-const mapsPlaceUrl = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
 const mapsEmbedUrl = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`
 
 function useCountdown(targetUtc: number) {
@@ -61,6 +60,7 @@ function App() {
   const countdown = useCountdown(event.targetUtc)
   const [activeSection, setActiveSection] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [shareStatus, setShareStatus] = useState('')
   const navItems = [
     { label: 'Invitation', href: '#home', section: 'home' },
     { label: 'The Occasion', href: '#blessing', section: 'blessing' },
@@ -117,7 +117,41 @@ function App() {
     { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
   ]
 
+  const shareInvitation = async () => {
+    const invitationUrl = new URL(window.location.href)
+    invitationUrl.hash = ''
+    const message = [
+      '*Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation*',
+      '',
+      'In the name of Allah, the Most Gracious, the Most Merciful.',
+      '',
+      `Together with their families, Musaib Sayed & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on *Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer)* at *Maktab e Gousia, Brein, Srinagar*.`,
+      '',
+      '*Explore the Invitation:*',
+      invitationUrl.toString(),
+    ].join('\n')
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Musaib & Insha – Nikah Invitation', text: message })
+        setShareStatus('')
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        setShareStatus('Could not open the share menu. Please try again.')
+      }
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(message)
+      setShareStatus('Invitation copied. Paste it into WhatsApp or Messages.')
+    } catch {
+      setShareStatus('Sharing is unavailable in this browser.')
+    }
+  }
+
   return (
+    <>
     <main>
       <header className="topbar">
         <div className="topbar-inner">
@@ -236,9 +270,6 @@ function App() {
               <a className="button button-primary" href={mapsUrl} target="_blank" rel="noreferrer">
                 <Compass size={16} /> Get Directions <ArrowUpRight size={15} />
               </a>
-              <a className="button button-outline" href={mapsPlaceUrl} target="_blank" rel="noreferrer">
-                View on Google Maps <ArrowUpRight size={15} />
-              </a>
             </div>
           </div>
           <div className="map-wrap reveal">
@@ -310,6 +341,21 @@ function App() {
         <footer className="footer">© 2026 MUSAIB &amp; INSHA.</footer>
       </section>
     </main>
+    <div className="floating-actions">
+      {shareStatus && <p className="share-status" role="status">{shareStatus}</p>}
+      <button type="button" className="floating-action" aria-label="Share this invitation" onClick={shareInvitation}>
+        <Share2 size={22} strokeWidth={1.8} />
+      </button>
+      <button
+        type="button"
+        className="floating-action"
+        aria-label="Back to top"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <ArrowUp size={22} strokeWidth={1.8} />
+      </button>
+    </div>
+    </>
   )
 }
 

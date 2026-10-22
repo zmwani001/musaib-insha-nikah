@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import backgroundAudioUrl from '../assets/background-music.mp3'
 import {
-  ArrowDown, ArrowUp, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
-  MapPin, Menu, Moon, Music2, Pause, Share2, Sparkles, Star, X,
+  ArrowDown, ArrowUpRight, CalendarDays, Clock3, Compass, Heart,
+  MapPin, Menu, Moon, Share2, Sparkles, Star, X,
 } from 'lucide-react'
 
 const event = {
@@ -61,9 +61,16 @@ function App() {
   const countdown = useCountdown(event.targetUtc)
   const [activeSection, setActiveSection] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [shareStatus, setShareStatus] = useState('')
-  const [audioPlaying, setAudioPlaying] = useState(false)
+  const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
+  const [isWelcomeLeaving, setIsWelcomeLeaving] = useState(false)
+  const [toast, setToast] = useState('')
   const audioRef = useRef<HTMLAudioElement>(null)
+  const audioContextRef = useRef<AudioContext | null>(null)
+  const audioGainRef = useRef<GainNode | null>(null)
+  const audioStartedRef = useRef(false)
+  const audioAttemptRef = useRef(false)
+  const toastTimeoutRef = useRef<number | null>(null)
+  const welcomeTimeoutRef = useRef<number | null>(null)
   const navItems = [
     { label: 'Invitation', href: '#home', section: 'home' },
     { label: 'The Occasion', href: '#blessing', section: 'blessing' },
@@ -73,8 +80,10 @@ function App() {
   ]
 
   useEffect(() => {
-    const sections = navItems
-      .map(({ section }) => document.getElementById(section))
+    const sections = [
+      ...navItems.map(({ section }) => document.getElementById(section)),
+      document.getElementById('closing'),
+    ]
       .filter((section): section is HTMLElement => section !== null)
     if (!('IntersectionObserver' in window)) return
 
@@ -120,78 +129,139 @@ function App() {
     { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
   ]
 
-  const startAudio = () => {
-    const audio = audioRef.current
-    if (!audio) return
+  const showToast = useCallback((message: string) => {
+    setToast(message)
+    if (toastTimeoutRef.current !== null) window.clearTimeout(toastTimeoutRef.current)
+    toastTimeoutRef.current = window.setTimeout(() => setToast(''), 2600)
+  }, [])
 
-    audio.play().then(() => {
-      setShareStatus('')
-    }).catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === 'AbortError') return
-      setShareStatus('Background audio could not be played. Please try again.')
-    })
+  const startAudio = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio || audioStartedRef.current || audioAttemptRef.current) return
+    audioAttemptRef.current = true
+
+    try {
+      let audioContext = audioContextRef.current
+      if (!audioContext) {
+        audioContext = new AudioContext()
+        const source = audioContext.createMediaElementSource(audio)
+        const gain = audioContext.createGain()
+        gain.gain.value = 0
+        source.connect(gain)
+        gain.connect(audioContext.destination)
+        audioContextRef.current = audioContext
+        audioGainRef.current = gain
+      }
+
+      const activeAudioContext = audioContext
+      const playback = audio.play()
+      const contextReady = activeAudioContext.state === 'suspended'
+        ? activeAudioContext.resume()
+        : Promise.resolve()
+      Promise.all([playback, contextReady]).then(() => {
+        const gain = audioGainRef.current
+        if (!gain) throw new Error('Background music gain control is unavailable.')
+        gain.gain.cancelScheduledValues(activeAudioContext.currentTime)
+        gain.gain.setValueAtTime(0, activeAudioContext.currentTime)
+        gain.gain.linearRampToValueAtTime(0.45, activeAudioContext.currentTime + 2.5)
+        audioStartedRef.current = true
+      }).catch((error: unknown) => {
+        audioAttemptRef.current = false
+        if (error instanceof DOMException && error.name === 'AbortError') return
+        showToast('Background music could not start. Tap to try again.')
+      })
+    } catch {
+      audioAttemptRef.current = false
+      showToast('Background music could not start. Tap to try again.')
+    }
+  }, [showToast])
+
+  const openInvitation = () => {
+    startAudio()
+    setIsWelcomeLeaving(true)
+    welcomeTimeoutRef.current = window.setTimeout(() => setIsWelcomeVisible(false), 700)
   }
 
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    audio.play().catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === 'NotAllowedError') {
-        setShareStatus('Tap the music button to start the background audio.')
-      } else if (!(error instanceof DOMException && error.name === 'AbortError')) {
-        setShareStatus('Background audio could not be played. Please try again.')
-      }
-    })
-  }, [])
+    const handleFirstInteraction = () => startAudio()
+    window.addEventListener('pointerdown', handleFirstInteraction, { passive: true })
+    window.addEventListener('click', handleFirstInteraction, { passive: true })
+    window.addEventListener('scroll', handleFirstInteraction, { passive: true })
+    return () => {
+      window.removeEventListener('pointerdown', handleFirstInteraction)
+      window.removeEventListener('click', handleFirstInteraction)
+      window.removeEventListener('scroll', handleFirstInteraction)
+      if (toastTimeoutRef.current !== null) window.clearTimeout(toastTimeoutRef.current)
+      if (welcomeTimeoutRef.current !== null) window.clearTimeout(welcomeTimeoutRef.current)
+    }
+  }, [startAudio])
 
   const shareInvitation = async () => {
     const invitationUrl = new URL(window.location.href)
     invitationUrl.hash = ''
-    const message = [
-      '*Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation*',
-      '',
-      'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-      '',
-      'In the name of Allah, the Most Gracious, the Most Merciful.',
-      '',
-      `Together with their families, Musaib Sayed & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on *Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer)* at *Maktab e Gousia, Brein, Srinagar*.`,
-      '',
-      '*Explore the Invitation:*',
-      invitationUrl.toString(),
-    ].join('\n')
+    invitationUrl.search = ''
+    const invitationLink = invitationUrl.toString()
+    const isMobile = navigator.maxTouchPoints > 0 && window.matchMedia('(max-width: 800px)').matches
 
-    if (navigator.share) {
+    if (isMobile && navigator.share) {
       try {
-        await navigator.share({ title: 'Musaib & Insha – Nikah Invitation', text: message })
-        setShareStatus('')
+        await navigator.share({
+          title: 'Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation',
+          text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ. Join us to celebrate the Nikah of Musaib Sayed & Insha Bint Mushtaq on Saturday, 31 October 2026.',
+          url: invitationLink,
+        })
       } catch (error) {
         if (error instanceof DOMException && error.name === 'AbortError') return
-        setShareStatus('Could not open the share menu. Please try again.')
+        showToast('Could not share the invitation. Please try again.')
       }
       return
     }
 
     try {
-      await navigator.clipboard.writeText(message)
-      setShareStatus('Invitation copied. Paste it into WhatsApp or Messages.')
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(invitationLink)
+      } else {
+        const temporaryInput = document.createElement('textarea')
+        temporaryInput.value = invitationLink
+        temporaryInput.setAttribute('readonly', '')
+        temporaryInput.style.position = 'fixed'
+        temporaryInput.style.opacity = '0'
+        document.body.append(temporaryInput)
+        temporaryInput.select()
+        const copied = document.execCommand('copy')
+        temporaryInput.remove()
+        if (!copied) throw new Error('Clipboard copy was denied.')
+      }
+      showToast('Link copied')
     } catch {
-      setShareStatus('Sharing is unavailable in this browser.')
+      showToast('Could not copy the invitation link.')
     }
   }
 
   return (
     <>
+    {isWelcomeVisible && (
+      <div className={`welcome-overlay${isWelcomeLeaving ? ' is-leaving' : ''}`} role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+        <div className="welcome-content">
+          <Ornament small />
+          <div className="brand-mark welcome-monogram" aria-hidden="true">
+            <span className="brand-m">M</span>
+            <span className="brand-amp">&amp;</span>
+            <span className="brand-i">I</span>
+          </div>
+          <p className="intro-line">Together with their families</p>
+          <h1 className="welcome-names" id="welcome-title">{event.groom}<br /><span>&amp;</span><br />{event.bride}</h1>
+          <p className="welcome-caption">Request the honour of your presence</p>
+          <button className="welcome-button" type="button" onClick={openInvitation}>Open Invitation</button>
+        </div>
+      </div>
+    )}
     <main>
       <audio
         ref={audioRef}
         src={backgroundAudioUrl}
-        autoPlay
         loop
         preload="auto"
-        onPlay={() => setAudioPlaying(true)}
-        onPause={() => setAudioPlaying(false)}
-        onError={() => setShareStatus('Background audio could not be loaded.')}
       />
       <header className="topbar">
         <div className="topbar-inner">
@@ -353,7 +423,7 @@ function App() {
         </div>
       </section>
 
-      <section className="closing section-pad">
+      <section className="closing section-pad" id="closing">
         <div className="closing-inner reveal">
           <div className="crescent" aria-hidden="true"><Moon size={27} strokeWidth={1} /></div>
           <SectionEyebrow>A little prayer, a lifetime of blessings</SectionEyebrow>
@@ -377,40 +447,14 @@ function App() {
           <p className="closing-signoff">With love, duas, and gratitude</p>
           <p className="closing-names">Musaib <span>&amp;</span> Insha</p>
           <Ornament small />
+          <button type="button" className="share-invitation" onClick={shareInvitation}>
+            <Share2 size={14} strokeWidth={1.7} /> Share Invitation
+          </button>
         </div>
         <footer className="footer">© 2026 MUSAIB &amp; INSHA.</footer>
       </section>
     </main>
-    <div className="floating-actions">
-      {shareStatus && <p className="share-status" role="status">{shareStatus}</p>}
-      <button type="button" className="floating-action" aria-label="Share this invitation" onClick={shareInvitation}>
-        <Share2 size={22} strokeWidth={1.8} />
-      </button>
-      <button
-        type="button"
-        className="floating-action"
-        aria-label={audioPlaying ? 'Pause background music' : 'Play background music'}
-        aria-pressed={audioPlaying}
-        onClick={() => {
-          if (audioPlaying) {
-            audioRef.current?.pause()
-            setShareStatus('')
-          } else {
-            startAudio()
-          }
-        }}
-      >
-        {audioPlaying ? <Pause size={22} strokeWidth={1.8} /> : <Music2 size={22} strokeWidth={1.8} />}
-      </button>
-      <button
-        type="button"
-        className="floating-action"
-        aria-label="Back to top"
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      >
-        <ArrowUp size={22} strokeWidth={1.8} />
-      </button>
-    </div>
+    {toast && <div className="site-toast" role="status">{toast}</div>}
     </>
   )
 }

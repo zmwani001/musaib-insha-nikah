@@ -307,8 +307,8 @@ main { overflow: clip; }
 .detail-label { font-size: 8px; letter-spacing: .19em; text-transform: uppercase; color: #8a8c7c; margin-bottom: 9px; }
 .detail-value { white-space: pre-line; font-family: 'Cormorant Garamond', serif; font-size: 21px; line-height: 1.25; color: var(--green); margin: 0; }
 .detail-6 { grid-column: span 2; }
-.venue-section { background: var(--ivory); }
-.venue-layout { display: grid; grid-template-columns: .85fr 1.15fr; align-items: center; gap: 76px; }
+.venue-section { background: linear-gradient(135deg, #f7f3ea, #f2eee4 58%, #eeeadd); }
+.venue-layout { display: grid; grid-template-columns: .85fr 1.15fr; align-items: center; gap: clamp(36px, 7vw, 84px); }
 .venue-copy .ornament { justify-content: flex-start; margin: 14px 0; }
 .venue-pin { color: var(--gold); margin: 27px 0 7px; }
 .venue-name { font-size: 32px; font-weight: 500; margin-bottom: 4px; }
@@ -320,10 +320,21 @@ main { overflow: clip; }
 .button:hover { transform: translateY(-2px); }
 .button-primary { background: var(--green); color: var(--ivory); border: 1px solid var(--green); }
 .button-primary:hover { background: var(--deep-green); }
-.map-wrap { border: 1px solid #d8d0bd; padding: 10px; background: #f1ede3; }
-.map-caption, .map-footer { display: flex; justify-content: space-between; align-items: center; color: #7a806f; font-size: 8px; letter-spacing: .14em; padding: 9px 5px 12px; }
-.map-wrap iframe { display: block; width: 100%; height: 350px; border: 0; filter: saturate(.65) sepia(.08); background: #e5e2d7; }
-.map-footer { justify-content: flex-start; gap: 7px; padding: 13px 5px 5px; letter-spacing: .04em; font-size: 10px; }
+.map-wrap { min-width: 0; border: 1px solid rgba(185,154,95,.48); padding: clamp(16px, 2.5vw, 25px); background: rgba(250,248,241,.94); box-shadow: 0 18px 45px rgba(41,70,56,.08), inset 0 0 0 4px rgba(185,154,95,.08); }
+.map-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 2px 17px; }
+.map-overline { margin: 0 0 5px; color: #8d805e; font-size: 8px; font-weight: 500; letter-spacing: .2em; }
+.map-card-title { margin: 0; color: var(--deep-green); font-size: clamp(23px, 2.7vw, 30px); font-weight: 500; line-height: 1.05; }
+.map-card-pin { display: grid; flex: 0 0 40px; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(185,154,95,.45); border-radius: 50%; color: #9e8150; background: #f4efe2; }
+.map-frame { overflow: hidden; border: 1px solid rgba(76,89,68,.2); background: #e9e5d9; }
+.map-wrap iframe { display: block; width: 100%; height: 350px; border: 0; filter: saturate(.72) sepia(.08); background: #e5e2d7; }
+.map-card-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 2px 1px; }
+.map-location { display: flex; min-width: 0; align-items: flex-start; gap: 9px; color: #9e8150; }
+.map-location p { display: grid; gap: 4px; min-width: 0; margin: 0; color: var(--deep-green); }
+.map-location strong { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; font-weight: 600; line-height: 1.1; }
+.map-location span { color: #77756d; font-size: 10px; line-height: 1.5; }
+.map-open-link { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; padding: 9px 0 9px 10px; color: #53684e; font-size: 9px; font-weight: 500; letter-spacing: .04em; border-bottom: 1px solid rgba(185,154,95,.65); }
+.map-open-link:hover { color: #987b49; }
+.map-open-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .countdown-section { background: var(--green); color: var(--ivory); text-align: center; isolation: isolate; overflow: hidden; }
 .countdown-pattern { position: absolute; inset: 0; z-index: -1; opacity: .07; background-image: repeating-linear-gradient(45deg, transparent 0 27px, #e3d3a9 28px, transparent 29px 55px), repeating-linear-gradient(-45deg, transparent 0 27px, #e3d3a9 28px, transparent 29px 55px); mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); }
 .countdown-section .eyebrow { color: #c7bd9e; }
@@ -592,8 +603,10 @@ main { overflow: clip; }
   .detail-6 { grid-column: span 2; }
   .venue-actions { flex-direction: column; }
   .button { width: 100%; }
+  .map-wrap { padding: 14px; }
   .map-wrap iframe { height: 270px; }
-  .map-caption { font-size: 7px; }
+  .map-card-footer { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .map-open-link { padding-left: 0; }
   .countdown { margin-top: 34px; }
   .countdown-unit { padding: 4px 5px; }
   .countdown-number { font-size: clamp(35px, 10vw, 46px); }

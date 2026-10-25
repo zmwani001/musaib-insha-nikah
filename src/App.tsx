@@ -11,15 +11,13 @@ const event = {
   islamicDate: '19 Jumada al-Awwal 1448 AH',
   timeLabel: '4:00 PM onwards, after Asr Prayer',
   venue: 'Jamia Masjid Brein, Nishat Srinagar',
-  address: '4V5J+62G, Brein Rd, Brein, Srinagar, Jammu and Kashmir 191121',
+  address: 'Brein Nishat, Srinagar, Jammu and Kashmir 191121',
   // 31 October 2026, 4:00 PM in Asia/Kolkata = 10:30 UTC.
   targetUtc: Date.UTC(2026, 9, 31, 10, 30, 0),
 }
 
-const mapsDestination = event.address
-const mapsQuery = encodeURIComponent(mapsDestination)
-const mapsUrl = 'https://maps.app.goo.gl/MW1H1WyWogNME1MH6'
-const mapsEmbedUrl = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`
+const mapsUrl = 'https://www.google.com/maps?cid=10207152521132395838&g_mp=CiVnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLkdldFBsYWNlEAMYASAF'
+const mapsEmbedUrl = 'https://maps.google.com/maps?q=34.108067,74.880082&z=17&output=embed'
 
 function useCountdown(targetUtc: number) {
   const getRemaining = () => Math.max(0, targetUtc - Date.now())
@@ -301,15 +299,31 @@ function App() {
             </div>
           </div>
           <div className="map-wrap reveal">
-            <div className="map-caption"><span>THE DESTINATION</span><span>BREIN · SRINAGAR</span></div>
-            <iframe
-              title={`Map showing ${event.venue}, ${event.address}`}
-              src={mapsEmbedUrl}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
-            <div className="map-footer"><MapPin size={14} /> {event.venue}</div>
+            <div className="map-card-heading">
+              <div>
+                <p className="map-overline">THE VENUE</p>
+                <h3 className="map-card-title">Jamia Masjid Brein Bazaar</h3>
+              </div>
+              <span className="map-card-pin"><MapPin size={19} strokeWidth={1.5} /></span>
+            </div>
+            <div className="map-frame">
+              <iframe
+                title={`Map showing Jamia Masjid Brein Bazaar, ${event.address}`}
+                src={mapsEmbedUrl}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </div>
+            <div className="map-card-footer">
+              <div className="map-location">
+                <MapPin size={16} strokeWidth={1.5} />
+                <p><strong>Jamia Masjid Brein Bazaar</strong><span>{event.address}</span></p>
+              </div>
+              <a className="map-open-link" href={mapsUrl} target="_blank" rel="noreferrer">
+                Open in Maps <ArrowUpRight size={15} />
+              </a>
+            </div>
           </div>
         </div>
       </section>

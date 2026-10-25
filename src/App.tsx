@@ -11,14 +11,14 @@ const event = {
   islamicDate: '19 Jumada al-Awwal 1448 AH',
   timeLabel: '4:00 PM onwards, after Asr Prayer',
   venue: 'Jamia Masjid Brein, Nishat Srinagar',
-  address: 'Nishat Brein Link Rd, Brein, Srinagar, Jammu and Kashmir 191121',
+  address: '4V5J+62G, Brein Rd, Brein, Srinagar, Jammu and Kashmir 191121',
   // 31 October 2026, 4:00 PM in Asia/Kolkata = 10:30 UTC.
   targetUtc: Date.UTC(2026, 9, 31, 10, 30, 0),
 }
 
-const mapsDestination = `${event.venue}, ${event.address}`
+const mapsDestination = event.address
 const mapsQuery = encodeURIComponent(mapsDestination)
-const mapsUrl = 'https://maps.app.goo.gl/JE2o54YHBvMtWoKJ9'
+const mapsUrl = 'https://maps.app.goo.gl/MW1H1WyWogNME1MH6'
 const mapsEmbedUrl = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`
 
 function useCountdown(targetUtc: number) {

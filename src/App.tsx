@@ -18,7 +18,7 @@ const event = {
 
 const mapsDestination = `${event.venue}, ${event.address}`
 const mapsQuery = encodeURIComponent(mapsDestination)
-const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${mapsQuery}`
+const mapsUrl = 'https://maps.app.goo.gl/JE2o54YHBvMtWoKJ9'
 const mapsEmbedUrl = `https://maps.google.com/maps?q=${mapsQuery}&output=embed`
 
 function useCountdown(targetUtc: number) {

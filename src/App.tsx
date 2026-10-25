@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 
 const event = {
-  groom: 'Musaib Sayed',
+  groom: 'Musaib Sayed Badoo',
   bride: 'Insha Bint Mushtaq',
   dateLabel: 'Saturday, 31 October 2026',
   islamicDate: '19 Jumada al-Awwal 1448 AH',
@@ -115,7 +115,7 @@ function App() {
     { icon: CalendarDays, label: 'Date', value: event.dateLabel },
     { icon: Moon, label: 'Islamic date', value: event.islamicDate },
     { icon: Clock3, label: 'Time', value: event.timeLabel },
-    { icon: MapPin, label: 'Venue', value: `${event.venue}\n${event.address}` },
+    { icon: MapPin, label: 'Venue', value: `${event.venue}, Jammu and Kashmir` },
   ]
 
   const showToast = (message: string) => {
@@ -131,11 +131,11 @@ function App() {
   const shareInvitation = async () => {
     const invitationLink = 'https://musaib-insha-nikah.vercel.app/'
     const invitationMessage = [
-      'Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation',
+      'Musaib Sayed Badoo & Insha Bint Mushtaq – Nikah Invitation',
       '',
       'In the name of Allah, the Most Gracious, the Most Merciful.',
       '',
-      'Together with their families, Musaib Sayed & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer) at Jamia Masjid Brein, Nishat Srinagar.',
+      'Together with their families, Musaib Sayed Badoo & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer) at Jamia Masjid Brein, Nishat Srinagar.',
       '',
       'Explore the Invitation:',
       invitationLink,
@@ -145,7 +145,7 @@ function App() {
     if (isMobile && navigator.share) {
       try {
         await navigator.share({
-          title: 'Musaib Sayed & Insha Bint Mushtaq – Nikah Invitation',
+          title: 'Musaib Sayed Badoo & Insha Bint Mushtaq – Nikah Invitation',
           text: invitationMessage,
         })
       } catch (error) {
@@ -228,16 +228,18 @@ function App() {
           <p className="translation">In the name of Allah, the Most Gracious, the Most Merciful</p>
           <Ornament />
           <p className="intro-line">Together with their families</p>
-          <h1 className="couple-name">{event.groom}</h1>
-          <div className="ampersand">&amp;</div>
-          <h1 className="couple-name bride-name">{event.bride}</h1>
+          <div className="couple-names">
+            <h1 className="couple-name">{event.groom}</h1>
+            <span className="ampersand" aria-hidden="true">&amp;</span>
+            <h1 className="couple-name bride-name">{event.bride}</h1>
+          </div>
           <p className="invitation-copy">Request the honour of your presence<br className="desktop-break" /> at their Nikah ceremony</p>
           <div className="hero-meta">
             <span>{event.dateLabel}</span>
             <i />
             <span>{event.timeLabel}</span>
           </div>
-          <p className="hero-location"><MapPin size={14} strokeWidth={1.5} /> {event.venue}, Brein, Srinagar</p>
+          <p className="hero-location"><MapPin size={14} strokeWidth={1.5} /> {event.venue}</p>
           <a className="text-link hero-link" href="#details">Explore the invitation <ArrowDown size={14} /></a>
         </div>
         <div className="hero-side-note">A BLESSED BEGINNING · SRINAGAR, KASHMIR</div>

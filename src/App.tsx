@@ -10,7 +10,7 @@ const event = {
   dateLabel: 'Saturday, 31 October 2026',
   islamicDate: '19 Jumada al-Awwal 1448 AH',
   timeLabel: '4:00 PM onwards, after Asr Prayer',
-  venue: 'Maktab e Gousia',
+  venue: 'Jamia Masjid Brein, Nishat Srinagar',
   address: 'Nishat Brein Link Rd, Brein, Srinagar, Jammu and Kashmir 191121',
   // 31 October 2026, 4:00 PM in Asia/Kolkata = 10:30 UTC.
   targetUtc: Date.UTC(2026, 9, 31, 10, 30, 0),
@@ -137,7 +137,7 @@ function App() {
       '',
       'In the name of Allah, the Most Gracious, the Most Merciful.',
       '',
-      'Together with their families, Musaib Sayed & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer) at Maktab e Gousia, Brein, Srinagar.',
+      'Together with their families, Musaib Sayed & Insha Bint Mushtaq request the honour of your presence at their Nikah ceremony on Saturday, 31 October 2026, at 4:00 PM onwards (after Asr Prayer) at Jamia Masjid Brein, Nishat Srinagar.',
       '',
       'Explore the Invitation:',
       invitationLink,
